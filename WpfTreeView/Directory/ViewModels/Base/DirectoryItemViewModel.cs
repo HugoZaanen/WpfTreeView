@@ -87,6 +87,9 @@ namespace WpfTreeView
             //Set path and type
             this.FullPath = FullPath;
             this.Type = type;
+
+            //setup the children as needed
+            this.ClearChildren();
         }
 
         #endregion

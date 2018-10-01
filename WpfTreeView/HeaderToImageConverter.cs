@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 
 namespace WpfTreeView
 {
-    [ValueConversion(typeof(string), typeof(BitmapImage))]
+    [ValueConversion(typeof(DirectoryItemType), typeof(BitmapImage))]
     class HeaderToImageConverter : IValueConverter
     {
         
@@ -18,16 +18,22 @@ namespace WpfTreeView
         
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            //Get the full path
-            var path = (string)value;
-
-            //If the path is null,ignore
-            if (path == null)
-                return null;
-
+            
             var name = DirectoryStructure.GetFileFolderName(path);
 
+            
+            //by default, we presume an image
             var image = "Images/download.jpg";
+
+            switch((DirectoryItemType)value)
+            {
+                case DirectoryItemType.Drive:
+                    image = "Image/drive.png";
+                    break;
+                case DirectoryItemType.Folder:
+                    image = "Image/download.jpg";
+                    break;
+            }
 
             // if the name is blank we presume it's  a drive as we cannot have a blank file or folder name
             if (string.IsNullOrEmpty(name))
