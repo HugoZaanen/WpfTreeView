@@ -4,12 +4,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WpfTreeView.Directory.Data;
+using System.Windows.Input;
 
 /// <summary>
 /// A view model for each directory item
 /// </summary>
-namespace WpfTreeView.Directory.ViewModels 
+namespace WpfTreeView
 {
     class DirectoryItemViewModel : BaseViewModel
     {
@@ -40,15 +40,16 @@ namespace WpfTreeView.Directory.ViewModels
         public bool CanExpand { get { return this.Type != DirectoryItemType.File; } }
 
         /// <summary>
-        /// indicates if this item canbe expanded
+        /// indicates if this item is expanded
         /// </summary>
-        public bool CenExpand { get { return this.Type != DirectoryItemType.File; } }
-        #endregion
+        public bool isExpand { get { return this.Type != DirectoryItemType.File; } }
+ 
+
         public  bool IsExpanded
         {
             get
             {
-               return this.Children.Count(f => f != null);
+               return this.Children?.Count(f => f != null) > 0;
             }
             set
             {
@@ -61,7 +62,36 @@ namespace WpfTreeView.Directory.ViewModels
             }
         }
 
-        #region HelperMethods
+        #endregion
+
+        #region Public Commands
+
+        /// <summary>
+        /// The command to expand this item
+        /// </summary>
+        public ICommand ExpandCommand { get; set; }
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// default constructor
+        /// </summary>
+        /// <param name="fullPath">The full path of this item</param>/>
+        public DirectoryItemViewModel(string fullPath, DirectoryItemType type)
+        {
+            ///create Commands
+            this.ExpandCommand = new RelayCommand(Expand);
+
+            //Set path and type
+            this.FullPath = FullPath;
+            this.Type = type;
+        }
+
+        #endregion
+
+        #region Helper Methods
 
         /// <summary>
         /// Removes all children from the list
@@ -72,19 +102,26 @@ namespace WpfTreeView.Directory.ViewModels
             this.Children = new ObservableCollection<DirectoryItemViewModel>();
 
             //Show the exapnd arrow if we are not a file
-            if(this.Type != DirecotryItemType.File)
+            if(this.Type != DirectoryItemType.File)
             {
-                this.Chidlren.Add(null);
+                this.Children.Add(null);
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Expands this directory and finds all children
         /// </summary>
         private void Expand()
         {
+            if (this.Type == DirectoryItemType.File)
+                return;
 
+            //find all children
+            var children = DirectoryStructure.GetDirectoryContents(this.FullPath);
+            this.Children = new ObservableCollection<DirectoryItemViewModel>(
+                                children.Select(content => new DirectoryItemViewModel(content.FullPath, content.Type)));
         }
-        #endregion
     }
 }

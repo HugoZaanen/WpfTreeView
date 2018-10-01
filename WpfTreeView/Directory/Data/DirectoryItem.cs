@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace WpfTreeView.Directory.Data
+namespace WpfTreeView
 {
     /// <summary>
     /// info aboput the directory item

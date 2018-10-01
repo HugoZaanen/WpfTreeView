@@ -18,7 +18,9 @@ namespace WpfTreeView
         {
             InitializeComponent();
 
-            this.DataContext = new Class1();
+            var d = new DirectoryStructureViewModel();
+            var item1 = d.Items[0];
+            d.Items[0].ExpandCommand.Execute(null);
         }
         #endregion       
     }
